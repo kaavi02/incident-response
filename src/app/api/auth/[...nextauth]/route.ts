@@ -30,13 +30,13 @@ export const authOptions: NextAuthOptions = {
         
         // Compare the provided password with the one in the database
         // In a real scenario, use bcrypt.compare
-        const isValid = credentials.password === user.password;
+        const isValid = credentials.password === (user as any).password;
 
         if (!isValid) {
           return null
         }
 
-        return user
+        return user as any
       }
     })
   ],
