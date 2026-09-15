@@ -78,20 +78,26 @@ export default function NewIncidentPage() {
               Priority Level
             </label>
             <div className="grid grid-cols-4 gap-4">
-              {["LOW", "MEDIUM", "HIGH", "CRITICAL"].map((p) => (
-                <button
-                  key={p}
-                  type="button"
-                  onClick={() => setPriority(p as any)}
-                  className={`py-3 px-4 rounded-xl border text-body-sm font-semibold transition-all ${
-                    priority === p
-                      ? "border-primary bg-primary/20 text-primary"
-                      : "border-outline-variant/40 bg-surface-container hover:bg-surface-container-high text-on-surface-variant"
-                  }`}
-                >
-                  {p}
-                </button>
-              ))}
+              {["LOW", "MEDIUM", "HIGH", "CRITICAL"].map((p) => {
+                let colorClasses = "border-outline-variant/40 bg-surface-container hover:bg-surface-container-high text-on-surface-variant";
+                if (priority === p) {
+                  if (p === "LOW") colorClasses = "border-emerald-500 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400";
+                  if (p === "MEDIUM") colorClasses = "border-blue-500 bg-blue-500/20 text-blue-600 dark:text-blue-400";
+                  if (p === "HIGH") colorClasses = "border-orange-500 bg-orange-500/20 text-orange-600 dark:text-orange-400";
+                  if (p === "CRITICAL") colorClasses = "border-red-500 bg-red-500/20 text-red-600 dark:text-red-400";
+                }
+                
+                return (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => setPriority(p as any)}
+                    className={`py-3 px-4 rounded-xl border text-body-sm font-semibold transition-all ${colorClasses}`}
+                  >
+                    {p}
+                  </button>
+                );
+              })}
             </div>
           </div>
 

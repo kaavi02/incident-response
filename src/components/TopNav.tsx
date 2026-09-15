@@ -4,12 +4,20 @@ import { useState, useRef, useEffect } from "react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
+import { useTheme } from "next-themes";
 
 export default function TopNav({ recentActivity = [] }: { recentActivity?: any[] }) {
   const { data: session } = useSession();
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -55,6 +63,19 @@ export default function TopNav({ recentActivity = [] }: { recentActivity?: any[]
 
       <div className="flex items-center gap-6 ml-6">
         <div className="flex items-center gap-4 border-r border-outline-variant/30 pr-6">
+          
+          {mounted && (
+            <button 
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center"
+              title="Toggle theme"
+            >
+              <span className="material-symbols-outlined" style={{ fontVariationSettings: '"FILL" 1' }}>
+                {theme === 'dark' ? 'light_mode' : 'dark_mode'}
+              </span>
+            </button>
+          )}
+
           <div className="relative" ref={dropdownRef}>
             <button 
               onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
