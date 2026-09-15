@@ -6,17 +6,29 @@ import TopNav from "@/components/TopNav";
 import IncidentCard from "@/components/IncidentCard";
 import { getIncidents } from "@/actions/incidents";
 import { PrismaClient } from "@prisma/client";
+import Link from "next/link";
+import ExportDashboardCsvButton from "@/components/ExportDashboardCsvButton";
 
 const prisma = new PrismaClient();
 
-export default async function Dashboard() {
+export default async function Dashboard({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  const resolvedParams = await searchParams;
+  const timeFilter = resolvedParams.time;
+  
   const session = await getServerSession(authOptions);
 
   if (!session) {
     redirect("/login");
   }
 
-  const incidents = await getIncidents();
+  let incidents = await getIncidents();
+  
+  // Apply time filter
+  if (timeFilter === "24h") {
+    const yesterday = new Date();
+    yesterday.setHours(yesterday.getHours() - 24);
+    incidents = incidents.filter(i => new Date(i.createdAt) > yesterday);
+  }
   
   // Calculate dynamic metrics
   const closedIncidents = incidents.filter(i => i.status === "CLOSED");
@@ -46,19 +58,20 @@ export default async function Dashboard() {
 
         <div className="flex items-center gap-3">
           <div className="flex items-center rounded-lg bg-surface-container border border-outline-variant/40 p-1">
-            <button className="px-3 py-1 rounded text-body-sm font-body-sm bg-surface-container-high text-primary font-medium shadow-sm">
+            <Link 
+              href="/"
+              className={`px-3 py-1 rounded text-body-sm font-body-sm font-medium shadow-sm transition-colors ${!timeFilter ? 'bg-surface-container-high text-primary' : 'text-on-surface-variant hover:text-on-surface'}`}
+            >
               Realtime
-            </button>
-            <button className="px-3 py-1 rounded text-body-sm font-body-sm text-on-surface-variant hover:text-on-surface">
+            </Link>
+            <Link 
+              href="/?time=24h"
+              className={`px-3 py-1 rounded text-body-sm font-body-sm font-medium shadow-sm transition-colors ${timeFilter === '24h' ? 'bg-surface-container-high text-primary' : 'text-on-surface-variant hover:text-on-surface'}`}
+            >
               Past 24h
-            </button>
+            </Link>
           </div>
-          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-outline-variant/40 bg-surface-container-low hover:bg-surface-container-high text-body-sm font-body-sm text-on-surface transition-all">
-            <span className="material-symbols-outlined text-[18px]">
-              file_download
-            </span>
-            <span>Export War Log</span>
-          </button>
+          <ExportDashboardCsvButton incidents={incidents} />
         </div>
       </div>
 
