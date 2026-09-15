@@ -18,8 +18,8 @@ export default function CommentsSection({ incidentId, userId, comments }: { inci
       await addComment(incidentId, userId, content);
       setContent("");
       toast.success("Comment posted successfully");
-    } catch (error) {
-      toast.error("Failed to post comment.");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to post comment.");
     } finally {
       setIsSubmitting(false);
     }

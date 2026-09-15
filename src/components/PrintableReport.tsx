@@ -1,5 +1,3 @@
-import { format } from "date-fns";
-
 export default function PrintableReport({ incident }: { incident: any }) {
   return (
     <div
@@ -107,7 +105,7 @@ export default function PrintableReport({ incident }: { incident: any }) {
                   [{new Date(esc.createdAt).toLocaleString()}]
                 </span>{" "}
                 Escalated from {esc.previousTier} to {esc.newTier} by {esc.escalatedBy.name || esc.escalatedBy.email}.
-                {esc.reason && <span className="italic block mt-1 text-gray-600">Reason: "{esc.reason}"</span>}
+                {esc.reason && <span className="italic block mt-1 text-gray-600">Reason: &quot;{esc.reason}&quot;</span>}
               </li>
             ))}
           </ul>

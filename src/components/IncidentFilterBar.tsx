@@ -7,14 +7,11 @@ export default function IncidentFilterBar() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
-  const [q, setQ] = useState(searchParams.get("q") || "");
   const [status, setStatus] = useState(searchParams.get("status") || "");
   const [priority, setPriority] = useState(searchParams.get("priority") || "");
   const [tier, setTier] = useState(searchParams.get("tier") || "");
-
-  useEffect(() => {
-    setQ(searchParams.get("q") || "");
-  }, [searchParams]);
+  
+  const q = searchParams.get("q") || "";
 
   const handleFilterChange = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -31,7 +28,6 @@ export default function IncidentFilterBar() {
     setStatus("");
     setPriority("");
     setTier("");
-    setQ("");
   };
 
   const hasFilters = status || priority || tier || q;

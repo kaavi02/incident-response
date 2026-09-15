@@ -136,7 +136,7 @@ export default async function IncidentWarRoom({ params }: { params: Promise<{ id
                       </span>
                     </div>
                     <p className="text-body-sm text-on-surface-variant">By {esc.escalatedBy.name || esc.escalatedBy.email}</p>
-                    {esc.reason && <p className="text-body-sm text-on-surface mt-2 italic">"{esc.reason}"</p>}
+                    {esc.reason && <p className="text-body-sm text-on-surface mt-2 italic">&quot;{esc.reason}&quot;</p>}
                   </div>
                 </div>
               ))}

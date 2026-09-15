@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { escalateIncident, updateIncidentStatus } from "@/actions/incidents";
-import { Incident, Priority, Status, EscalationTier, User } from "@prisma/client";
+import { Incident, Status, EscalationTier, User } from "@prisma/client";
 import { toast } from "react-hot-toast";
 
 type PopulatedIncident = Incident & {

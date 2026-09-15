@@ -1,8 +1,6 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
-import Sidebar from "@/components/Sidebar";
-import TopNav from "@/components/TopNav";
 import IncidentCard from "@/components/IncidentCard";
 import { getIncidents } from "@/actions/incidents";
 import { PrismaClient } from "@prisma/client";
@@ -31,11 +29,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   }
   
   // Calculate dynamic metrics
-  const closedIncidents = incidents.filter(i => i.status === "CLOSED");
   const postMortems = await prisma.postMortem.findMany();
-  
-  const totalMTTR = postMortems.reduce((acc, pm) => acc + (pm.timeToResolve || 0), 0);
-  const avgMTTR = postMortems.length > 0 ? Math.round(totalMTTR / postMortems.length) : 0;
   
   const openIncidentsCount = incidents.filter(i => i.status !== "CLOSED" && i.status !== "RESOLVED").length;
   const criticalCount = incidents.filter(i => i.priority === "CRITICAL" && i.status !== "RESOLVED" && i.status !== "CLOSED").length;
