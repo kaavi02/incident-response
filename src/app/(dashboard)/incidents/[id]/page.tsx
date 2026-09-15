@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import CommentsSection from "@/components/CommentsSection";
 import ExportPdfButton from "@/components/ExportPdfButton";
+import PrintableReport from "@/components/PrintableReport";
 
 export default async function IncidentWarRoom({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -31,7 +32,7 @@ export default async function IncidentWarRoom({ params }: { params: Promise<{ id
           <span className="material-symbols-outlined text-[18px]">arrow_back</span>
           Back to Hub
         </Link>
-        <ExportPdfButton targetId="pdf-report-container" filename={`Incident_${incident.id.slice(0,8)}`} />
+        <ExportPdfButton targetId="printable-report" filename={`Incident_${incident.id.slice(0,8)}`} />
       </div>
 
       <div id="pdf-report-container" className="bg-surface-container-low/70 rounded-2xl border border-outline-variant/30 p-8 shadow-2xl backdrop-blur-md">
@@ -115,6 +116,9 @@ export default async function IncidentWarRoom({ params }: { params: Promise<{ id
         />
         
       </div>
+      
+      {/* Hidden Printable Report */}
+      <PrintableReport incident={incident} />
     </div>
   );
 }

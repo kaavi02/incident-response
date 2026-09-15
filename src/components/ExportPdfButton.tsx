@@ -20,17 +20,14 @@ export default function ExportPdfButton({ targetId, filename }: { targetId: stri
       setIsExporting(true);
       
       // Temporarily modify styles for better PDF rendering if needed
-      const originalBg = element.style.backgroundColor;
-      element.style.backgroundColor = "#1a1c1e"; // match dark mode surface
+      // No need to modify background anymore, PrintableReport handles it.
 
       const canvas = await html2canvas(element, {
         scale: 2, // High resolution
         useCORS: true,
         logging: false,
-        backgroundColor: "#1a1c1e",
+        backgroundColor: "#ffffff",
       });
-
-      element.style.backgroundColor = originalBg;
 
       const imgData = canvas.toDataURL("image/jpeg", 1.0);
       const pdf = new jsPDF("p", "mm", "a4");
