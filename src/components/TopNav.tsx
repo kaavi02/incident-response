@@ -1,12 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { formatDistanceToNow } from "date-fns";
 
-export default function TopNav() {
+export default function TopNav({ recentActivity = [] }: { recentActivity?: any[] }) {
   const { data: session } = useSession();
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsNotificationsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <header className="sticky top-0 z-40 bg-surface-container-lowest/80 backdrop-blur-xl border-b border-outline-variant/30 px-6 py-4 flex items-center justify-between">
@@ -42,15 +55,70 @@ export default function TopNav() {
 
       <div className="flex items-center gap-6 ml-6">
         <div className="flex items-center gap-4 border-r border-outline-variant/30 pr-6">
-          <button className="relative text-on-surface-variant hover:text-primary transition-colors">
-            <span
-              className="material-symbols-outlined"
-              style={{ fontVariationSettings: '"FILL" 0' }}
+          <div className="relative" ref={dropdownRef}>
+            <button 
+              onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+              className={`relative text-on-surface-variant hover:text-primary transition-colors ${isNotificationsOpen ? 'text-primary' : ''}`}
             >
-              notifications
-            </span>
-            <span className="absolute top-0 right-0 w-2 h-2 rounded-full bg-error animate-pulse"></span>
-          </button>
+              <span
+                className="material-symbols-outlined"
+                style={{ fontVariationSettings: '"FILL" 0' }}
+              >
+                notifications
+              </span>
+              {recentActivity.length > 0 && (
+                <span className="absolute top-0 right-0 w-2 h-2 rounded-full bg-error animate-pulse"></span>
+              )}
+            </button>
+
+            {isNotificationsOpen && (
+              <div className="absolute right-0 mt-2 w-80 bg-surface-container-low border border-outline-variant/30 rounded-xl shadow-2xl overflow-hidden z-50">
+                <div className="px-4 py-3 border-b border-outline-variant/30 bg-surface-container">
+                  <h3 className="text-body-md font-semibold text-on-surface">Recent Activity</h3>
+                </div>
+                <div className="max-h-96 overflow-y-auto">
+                  {recentActivity.length > 0 ? (
+                    recentActivity.map((activity, i) => (
+                      <Link 
+                        key={activity.id + i} 
+                        href={`/incidents/${activity.id}`}
+                        onClick={() => setIsNotificationsOpen(false)}
+                        className="block px-4 py-3 border-b border-outline-variant/10 hover:bg-surface-container-high transition-colors"
+                      >
+                        <div className="flex justify-between items-start mb-1">
+                          <span className="text-body-sm font-semibold text-on-surface truncate pr-2">
+                            {activity.title}
+                          </span>
+                          <span className="text-telemetry-sm text-on-surface-variant whitespace-nowrap">
+                            {formatDistanceToNow(new Date(activity.updatedAt), { addSuffix: true })}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 mt-2">
+                          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-primary/20 text-primary border border-primary/30 uppercase">
+                            {activity.status}
+                          </span>
+                          <span className="text-telemetry-sm font-mono text-on-surface-variant opacity-70">
+                            {activity.id.slice(0, 8)}
+                          </span>
+                        </div>
+                      </Link>
+                    ))
+                  ) : (
+                    <div className="px-4 py-6 text-center text-on-surface-variant text-body-sm">
+                      No recent activity.
+                    </div>
+                  )}
+                </div>
+                <Link 
+                  href="/incidents" 
+                  onClick={() => setIsNotificationsOpen(false)}
+                  className="block px-4 py-3 text-center text-body-sm font-semibold text-primary hover:bg-surface-container transition-colors border-t border-outline-variant/30"
+                >
+                  View All Incidents
+                </Link>
+              </div>
+            )}
+          </div>
           <Link href="/admin" className="text-on-surface-variant hover:text-primary transition-colors flex items-center">
             <span
               className="material-symbols-outlined"

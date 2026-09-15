@@ -152,3 +152,11 @@ export async function addComment(
   revalidatePath("/");
   return comment;
 }
+
+export async function getRecentActivity() {
+  return prisma.incident.findMany({
+    take: 5,
+    orderBy: { updatedAt: "desc" },
+    select: { id: true, title: true, status: true, tier: true, updatedAt: true }
+  });
+}
