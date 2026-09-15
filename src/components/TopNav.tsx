@@ -119,14 +119,16 @@ export default function TopNav({ recentActivity = [] }: { recentActivity?: any[]
               </div>
             )}
           </div>
-          <Link href="/admin" className="text-on-surface-variant hover:text-primary transition-colors flex items-center">
-            <span
-              className="material-symbols-outlined"
-              style={{ fontVariationSettings: '"FILL" 0' }}
-            >
-              settings
-            </span>
-          </Link>
+          {(session?.user as any)?.role === "ADMIN" && (
+            <Link href="/admin" className="text-on-surface-variant hover:text-primary transition-colors flex items-center">
+              <span
+                className="material-symbols-outlined"
+                style={{ fontVariationSettings: '"FILL" 0' }}
+              >
+                settings
+              </span>
+            </Link>
+          )}
         </div>
         <div className="flex items-center gap-3">
           <div className="text-right hidden md:block">

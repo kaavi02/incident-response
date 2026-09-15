@@ -79,6 +79,25 @@ export default function Sidebar() {
             </span>
           </Link>
 
+          <Link
+            href="/incidents/new"
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-md transition-all duration-200 group mt-2 ${
+              pathname === "/incidents/new"
+                ? "bg-primary text-on-primary shadow-lg"
+                : "bg-surface-container-high text-on-surface hover:bg-primary/90 hover:text-on-primary shadow-sm"
+            }`}
+          >
+            <span
+              className="material-symbols-outlined group-hover:scale-110 transition-transform"
+              style={{ fontVariationSettings: '"FILL" 1' }}
+            >
+              add_circle
+            </span>
+            <span className="text-body-md font-body-md font-semibold tracking-wide">
+              Post an Incident
+            </span>
+          </Link>
+
           {isAdmin && (
             <Link
               href="/admin"
