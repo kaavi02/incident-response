@@ -28,13 +28,16 @@
   width: 4px;
   height: 4px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-track {
   background: rgba(11, 14, 21, 0.5);
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: rgba(61, 73, 76, 0.4);
   border-radius: 4px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(76, 215, 246, 0.4);
 }
