@@ -49,11 +49,55 @@ export async function createUser(data: {
 }
 
 export async function deleteUser(userId: string) {
-  // Prevent deleting the only admin or something similar if needed
+  // Check if we are deleting the only admin
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (user?.role === "ADMIN") {
+    const adminCount = await prisma.user.count({ where: { role: "ADMIN" } });
+    if (adminCount <= 1) {
+      throw new Error("Cannot delete the last admin user.");
+    }
+  }
+
   await prisma.user.delete({
     where: { id: userId },
   });
   
   revalidatePath("/admin");
   return true;
+}
+
+export async function updateUser(userId: string, data: {
+  name: string;
+  email: string;
+  passwordRaw?: string;
+  role: string;
+}) {
+  const existingEmailUser = await prisma.user.findFirst({
+    where: {
+      email: data.email,
+      id: { not: userId }
+    }
+  });
+
+  if (existingEmailUser) {
+    throw new Error("User with this email already exists.");
+  }
+
+  const updateData: any = {
+    name: data.name,
+    email: data.email,
+    role: data.role as Role,
+  };
+
+  if (data.passwordRaw) {
+    updateData.password = data.passwordRaw; // WARNING: In production use bcrypt
+  }
+
+  const user = await prisma.user.update({
+    where: { id: userId },
+    data: updateData
+  });
+
+  revalidatePath("/admin");
+  return user;
 }

@@ -3,6 +3,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import { getUsers } from "@/actions/admin";
 import CreateUserForm from "@/components/CreateUserForm";
+import AdminUserRow from "@/components/AdminUserRow";
 
 export default async function AdminDashboard() {
   const session = await getServerSession(authOptions);
@@ -46,27 +47,11 @@ export default async function AdminDashboard() {
             </thead>
             <tbody className="divide-y divide-outline-variant/20">
               {users.map((u) => (
-                <tr key={u.id} className="hover:bg-surface-container-low/50 transition-colors">
-                  <td className="px-5 py-3 text-body-md font-semibold text-on-surface">
-                    {u.name || "N/A"}
-                  </td>
-                  <td className="px-5 py-3 text-body-sm text-on-surface-variant">
-                    {u.email}
-                  </td>
-                  <td className="px-5 py-3">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-label-caps border border-primary/40 bg-primary-container/20 text-primary font-semibold">
-                      {u.role}
-                    </span>
-                  </td>
-                  <td className="px-5 py-3 text-body-sm text-on-surface-variant" suppressHydrationWarning>
-                    {new Date(u.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="px-5 py-3">
-                    <button className="text-error hover:text-error/80 text-telemetry-sm font-semibold transition-colors disabled:opacity-50" disabled={u.role === "ADMIN"}>
-                      Revoke
-                    </button>
-                  </td>
-                </tr>
+                <AdminUserRow 
+                  key={u.id} 
+                  user={u} 
+                  currentUserId={(session?.user as any)?.id} 
+                />
               ))}
               {users.length === 0 && (
                 <tr>
