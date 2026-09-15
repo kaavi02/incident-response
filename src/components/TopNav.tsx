@@ -5,12 +5,15 @@ import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { useTheme } from "next-themes";
+import { useRouter } from "next/navigation";
 
 export default function TopNav({ recentActivity = [] }: { recentActivity?: any[] }) {
   const { data: session } = useSession();
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
   
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -29,6 +32,12 @@ export default function TopNav({ recentActivity = [] }: { recentActivity?: any[]
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && searchQuery.trim()) {
+      router.push(`/incidents?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
   return (
     <header className="sticky top-0 z-40 bg-surface-container-lowest/80 backdrop-blur-xl border-b border-outline-variant/30 px-6 py-4 flex items-center justify-between">
       <div className="flex-1 max-w-2xl">
@@ -45,6 +54,9 @@ export default function TopNav({ recentActivity = [] }: { recentActivity?: any[]
           </span>
           <input
             type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleSearch}
             placeholder="Search incident ID, hostname, IP..."
             className="w-full bg-surface-container/50 border border-outline-variant/30 rounded-full py-2.5 pl-12 pr-12 text-body-md text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:border-primary/50 focus:bg-surface-container transition-all"
             onFocus={() => setIsSearchFocused(true)}

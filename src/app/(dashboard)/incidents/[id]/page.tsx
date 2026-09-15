@@ -74,6 +74,42 @@ export default async function IncidentWarRoom({ params }: { params: Promise<{ id
           </div>
         </div>
 
+        {/* Network Telemetry Section */}
+        {(incident.sourceIp || incident.destinationIp || incident.sourcePort || incident.destinationPort) && (
+          <div className="mb-8">
+            <h3 className="text-headline-sm font-headline-sm font-semibold text-on-surface mb-3 flex items-center gap-2">
+              <span className="material-symbols-outlined text-primary text-[20px]">radar</span>
+              Network Telemetry
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-surface-container/30 p-4 rounded-xl border border-outline-variant/20">
+              {incident.sourceIp && (
+                <div>
+                  <span className="block font-label-caps mb-1 text-on-surface-variant opacity-70">Source IP</span>
+                  <span className="font-mono text-body-sm text-primary bg-primary/10 px-2 py-1 rounded">{incident.sourceIp}</span>
+                </div>
+              )}
+              {incident.sourcePort && (
+                <div>
+                  <span className="block font-label-caps mb-1 text-on-surface-variant opacity-70">Source Port</span>
+                  <span className="font-mono text-body-sm text-primary bg-primary/10 px-2 py-1 rounded">{incident.sourcePort}</span>
+                </div>
+              )}
+              {incident.destinationIp && (
+                <div>
+                  <span className="block font-label-caps mb-1 text-on-surface-variant opacity-70">Destination IP</span>
+                  <span className="font-mono text-body-sm text-tertiary bg-tertiary/10 px-2 py-1 rounded">{incident.destinationIp}</span>
+                </div>
+              )}
+              {incident.destinationPort && (
+                <div>
+                  <span className="block font-label-caps mb-1 text-on-surface-variant opacity-70">Destination Port</span>
+                  <span className="font-mono text-body-sm text-tertiary bg-tertiary/10 px-2 py-1 rounded">{incident.destinationPort}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Description Section */}
         <div className="mb-8">
           <h3 className="text-headline-sm font-headline-sm font-semibold text-on-surface mb-3">Description</h3>

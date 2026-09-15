@@ -13,6 +13,13 @@ export default function NewIncidentPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState<"LOW" | "MEDIUM" | "HIGH" | "CRITICAL">("MEDIUM");
+  
+  // Telemetry state
+  const [sourceIp, setSourceIp] = useState("");
+  const [destinationIp, setDestinationIp] = useState("");
+  const [sourcePort, setSourcePort] = useState("");
+  const [destinationPort, setDestinationPort] = useState("");
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -35,6 +42,10 @@ export default function NewIncidentPage() {
         description,
         priority,
         reporterId: userId,
+        sourceIp: sourceIp || undefined,
+        destinationIp: destinationIp || undefined,
+        sourcePort: sourcePort ? parseInt(sourcePort) : undefined,
+        destinationPort: destinationPort ? parseInt(destinationPort) : undefined,
       });
       toast.success("Incident posted successfully!");
       router.push(`/incidents/${incident.id}`);
@@ -58,46 +69,95 @@ export default function NewIncidentPage() {
 
       <div className="bg-surface-container-low/70 rounded-2xl border border-outline-variant/30 p-8 shadow-2xl backdrop-blur-md">
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="title" className="block text-body-sm font-semibold text-on-surface mb-2">
-              Incident Title
-            </label>
-            <input
-              id="title"
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Suspicious Login Activity from Unknown IP"
-              className="w-full bg-surface-container-lowest border border-outline-variant/40 rounded-xl px-4 py-3 text-body-md text-on-surface placeholder-on-surface-variant/50 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
-              required
-            />
-          </div>
+          <div className="space-y-6 pb-6 border-b border-outline-variant/20">
+            <h2 className="text-headline-sm font-semibold text-primary">Core Details</h2>
+            <div>
+              <label htmlFor="title" className="block text-body-sm font-semibold text-on-surface mb-2">
+                Incident Title
+              </label>
+              <input
+                id="title"
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="e.g. Suspicious Login Activity from Unknown IP"
+                className="w-full bg-surface-container-lowest border border-outline-variant/40 rounded-xl px-4 py-3 text-body-md text-on-surface placeholder-on-surface-variant/50 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
+                required
+              />
+            </div>
 
-          <div>
-            <label htmlFor="priority" className="block text-body-sm font-semibold text-on-surface mb-2">
-              Priority Level
-            </label>
-            <div className="grid grid-cols-4 gap-4">
-              {["LOW", "MEDIUM", "HIGH", "CRITICAL"].map((p) => {
-                let colorClasses = "border-outline-variant/40 bg-surface-container hover:bg-surface-container-high text-on-surface-variant";
-                if (priority === p) {
-                  if (p === "LOW") colorClasses = "border-emerald-500 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400";
-                  if (p === "MEDIUM") colorClasses = "border-blue-500 bg-blue-500/20 text-blue-600 dark:text-blue-400";
-                  if (p === "HIGH") colorClasses = "border-orange-500 bg-orange-500/20 text-orange-600 dark:text-orange-400";
-                  if (p === "CRITICAL") colorClasses = "border-red-500 bg-red-500/20 text-red-600 dark:text-red-400";
-                }
-                
-                return (
-                  <button
-                    key={p}
-                    type="button"
-                    onClick={() => setPriority(p as any)}
-                    className={`py-3 px-4 rounded-xl border text-body-sm font-semibold transition-all ${colorClasses}`}
-                  >
-                    {p}
-                  </button>
-                );
-              })}
+            <div>
+              <label htmlFor="priority" className="block text-body-sm font-semibold text-on-surface mb-2">
+                Priority Level
+              </label>
+              <div className="grid grid-cols-4 gap-4">
+                {["LOW", "MEDIUM", "HIGH", "CRITICAL"].map((p) => {
+                  let colorClasses = "border-outline-variant/40 bg-surface-container hover:bg-surface-container-high text-on-surface-variant";
+                  if (priority === p) {
+                    if (p === "LOW") colorClasses = "border-emerald-500 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400";
+                    if (p === "MEDIUM") colorClasses = "border-blue-500 bg-blue-500/20 text-blue-600 dark:text-blue-400";
+                    if (p === "HIGH") colorClasses = "border-orange-500 bg-orange-500/20 text-orange-600 dark:text-orange-400";
+                    if (p === "CRITICAL") colorClasses = "border-red-500 bg-red-500/20 text-red-600 dark:text-red-400";
+                  }
+                  
+                  return (
+                    <button
+                      key={p}
+                      type="button"
+                      onClick={() => setPriority(p as any)}
+                      className={`py-3 px-4 rounded-xl border text-body-sm font-semibold transition-all ${colorClasses}`}
+                    >
+                      {p}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+          
+          <div className="space-y-6 pb-6 border-b border-outline-variant/20">
+            <h2 className="text-headline-sm font-semibold text-primary">Network Telemetry (Optional)</h2>
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <label className="block text-body-sm font-semibold text-on-surface mb-2">Source IP</label>
+                <input
+                  type="text"
+                  value={sourceIp}
+                  onChange={(e) => setSourceIp(e.target.value)}
+                  placeholder="e.g. 192.168.1.100"
+                  className="w-full bg-surface-container-lowest border border-outline-variant/40 rounded-xl px-4 py-3 text-body-md text-on-surface font-mono placeholder-on-surface-variant/50 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
+                />
+              </div>
+              <div>
+                <label className="block text-body-sm font-semibold text-on-surface mb-2">Source Port</label>
+                <input
+                  type="number"
+                  value={sourcePort}
+                  onChange={(e) => setSourcePort(e.target.value)}
+                  placeholder="e.g. 443"
+                  className="w-full bg-surface-container-lowest border border-outline-variant/40 rounded-xl px-4 py-3 text-body-md text-on-surface font-mono placeholder-on-surface-variant/50 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
+                />
+              </div>
+              <div>
+                <label className="block text-body-sm font-semibold text-on-surface mb-2">Destination IP</label>
+                <input
+                  type="text"
+                  value={destinationIp}
+                  onChange={(e) => setDestinationIp(e.target.value)}
+                  placeholder="e.g. 10.0.0.5"
+                  className="w-full bg-surface-container-lowest border border-outline-variant/40 rounded-xl px-4 py-3 text-body-md text-on-surface font-mono placeholder-on-surface-variant/50 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
+                />
+              </div>
+              <div>
+                <label className="block text-body-sm font-semibold text-on-surface mb-2">Destination Port</label>
+                <input
+                  type="number"
+                  value={destinationPort}
+                  onChange={(e) => setDestinationPort(e.target.value)}
+                  placeholder="e.g. 8080"
+                  className="w-full bg-surface-container-lowest border border-outline-variant/40 rounded-xl px-4 py-3 text-body-md text-on-surface font-mono placeholder-on-surface-variant/50 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
+                />
+              </div>
             </div>
           </div>
 

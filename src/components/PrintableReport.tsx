@@ -59,6 +59,31 @@ export default function PrintableReport({ incident }: { incident: any }) {
         </table>
       </div>
 
+      {/* Network Telemetry */}
+      {(incident.sourceIp || incident.destinationIp || incident.sourcePort || incident.destinationPort) && (
+        <div className="mb-8">
+          <h3 className="text-lg font-bold text-gray-900 border-b border-gray-300 pb-2 mb-3">
+            Network Telemetry
+          </h3>
+          <table className="w-full border-collapse border border-gray-300 text-sm">
+            <tbody>
+              <tr>
+                <td className="border border-gray-300 bg-gray-100 p-2 font-semibold w-1/4">Source IP</td>
+                <td className="border border-gray-300 p-2 font-mono">{incident.sourceIp || "N/A"}</td>
+                <td className="border border-gray-300 bg-gray-100 p-2 font-semibold w-1/4">Source Port</td>
+                <td className="border border-gray-300 p-2 font-mono">{incident.sourcePort || "N/A"}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-300 bg-gray-100 p-2 font-semibold">Destination IP</td>
+                <td className="border border-gray-300 p-2 font-mono">{incident.destinationIp || "N/A"}</td>
+                <td className="border border-gray-300 bg-gray-100 p-2 font-semibold">Destination Port</td>
+                <td className="border border-gray-300 p-2 font-mono">{incident.destinationPort || "N/A"}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
+
       {/* Description */}
       <div className="mb-8">
         <h3 className="text-lg font-bold text-gray-900 border-b border-gray-300 pb-2 mb-3">

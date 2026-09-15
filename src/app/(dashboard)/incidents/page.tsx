@@ -1,8 +1,18 @@
 import { getIncidents } from "@/actions/incidents";
 import Link from "next/link";
+import IncidentFilterBar from "@/components/IncidentFilterBar";
 
-export default async function IncidentsPage() {
-  const incidents = await getIncidents();
+export default async function IncidentsPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  const resolvedParams = await searchParams;
+  
+  const filters = {
+    q: typeof resolvedParams.q === 'string' ? resolvedParams.q : undefined,
+    status: typeof resolvedParams.status === 'string' ? resolvedParams.status as any : undefined,
+    tier: typeof resolvedParams.tier === 'string' ? resolvedParams.tier as any : undefined,
+    priority: typeof resolvedParams.priority === 'string' ? resolvedParams.priority as any : undefined,
+  };
+
+  const incidents = await getIncidents(filters);
 
   return (
     <div className="space-y-8">
@@ -14,6 +24,8 @@ export default async function IncidentsPage() {
           Browse and manage all historical and active incidents.
         </p>
       </div>
+
+      <IncidentFilterBar />
 
       <section className="bg-surface-container-lowest/50 border border-outline-variant/30 rounded-xl overflow-hidden backdrop-blur-md">
         <div className="p-0 overflow-x-auto">

@@ -107,6 +107,12 @@ model Incident {
   assignee    User?        @relation("IncidentAssignee", fields: [assigneeId], references: [id])
   
   tier        EscalationTier @default(L1)
+  
+  // Telemetry
+  sourceIp        String?
+  destinationIp   String?
+  sourcePort      Int?
+  destinationPort Int?
 
   comments    Comment[]
   escalations Escalation[]

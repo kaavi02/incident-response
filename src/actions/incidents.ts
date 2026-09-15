@@ -5,8 +5,29 @@ import { revalidatePath } from "next/cache";
 
 const prisma = new PrismaClient();
 
-export async function getIncidents() {
+export async function getIncidents(filters?: {
+  q?: string;
+  status?: Status;
+  tier?: EscalationTier;
+  priority?: Priority;
+}) {
+  const where: any = {};
+  
+  if (filters?.q) {
+    where.OR = [
+      { title: { contains: filters.q, mode: "insensitive" } },
+      { id: { contains: filters.q, mode: "insensitive" } },
+      { sourceIp: { contains: filters.q, mode: "insensitive" } },
+      { destinationIp: { contains: filters.q, mode: "insensitive" } }
+    ];
+  }
+  
+  if (filters?.status) where.status = filters.status;
+  if (filters?.tier) where.tier = filters.tier;
+  if (filters?.priority) where.priority = filters.priority;
+
   return prisma.incident.findMany({
+    where,
     include: {
       reporter: true,
       assignee: true,
@@ -50,6 +71,10 @@ export async function createIncident(data: {
   description: string;
   priority: Priority;
   reporterId: string;
+  sourceIp?: string;
+  destinationIp?: string;
+  sourcePort?: number;
+  destinationPort?: number;
 }) {
   const incident = await prisma.incident.create({
     data: {
@@ -58,9 +83,14 @@ export async function createIncident(data: {
       priority: data.priority,
       reporterId: data.reporterId,
       tier: "L1", // Starts at L1
+      sourceIp: data.sourceIp,
+      destinationIp: data.destinationIp,
+      sourcePort: data.sourcePort,
+      destinationPort: data.destinationPort,
     },
   });
   revalidatePath("/");
+  revalidatePath("/incidents");
   return incident;
 }
 
