@@ -23,7 +23,7 @@ export default function LoginPage() {
     });
 
     if (res?.error) {
-      setError("Invalid credentials. Try admin@aegis.com / admin");
+      setError("Invalid credentials. Please verify your email and password.");
       setIsLoading(false);
     } else {
       router.push("/");
@@ -102,13 +102,6 @@ export default function LoginPage() {
             </span>
           </button>
         </form>
-        <div className="mt-6 text-center">
-            <p className="text-telemetry-sm text-on-surface-variant">
-              Test Accounts:<br/>
-              admin@aegis.com / admin<br/>
-              john.l1@aegis.com / password
-            </p>
-        </div>
       </div>
     </div>
   );

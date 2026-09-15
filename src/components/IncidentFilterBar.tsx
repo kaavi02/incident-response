@@ -1,16 +1,14 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
 
 export default function IncidentFilterBar() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
-  const [status, setStatus] = useState(searchParams.get("status") || "");
-  const [priority, setPriority] = useState(searchParams.get("priority") || "");
-  const [tier, setTier] = useState(searchParams.get("tier") || "");
-  
+  const status = searchParams.get("status") || "";
+  const priority = searchParams.get("priority") || "";
+  const tier = searchParams.get("tier") || "";
   const q = searchParams.get("q") || "";
 
   const handleFilterChange = (key: string, value: string) => {
@@ -25,9 +23,6 @@ export default function IncidentFilterBar() {
 
   const clearFilters = () => {
     router.push("/incidents");
-    setStatus("");
-    setPriority("");
-    setTier("");
   };
 
   const hasFilters = status || priority || tier || q;
@@ -42,10 +37,7 @@ export default function IncidentFilterBar() {
         
         <select
           value={status}
-          onChange={(e) => {
-            setStatus(e.target.value);
-            handleFilterChange("status", e.target.value);
-          }}
+          onChange={(e) => handleFilterChange("status", e.target.value)}
           className="bg-surface-container border border-outline-variant/30 rounded-lg px-3 py-1.5 text-body-sm text-on-surface focus:outline-none focus:border-primary/50 transition-colors cursor-pointer"
         >
           <option value="">All Statuses</option>
@@ -59,10 +51,7 @@ export default function IncidentFilterBar() {
 
         <select
           value={priority}
-          onChange={(e) => {
-            setPriority(e.target.value);
-            handleFilterChange("priority", e.target.value);
-          }}
+          onChange={(e) => handleFilterChange("priority", e.target.value)}
           className="bg-surface-container border border-outline-variant/30 rounded-lg px-3 py-1.5 text-body-sm text-on-surface focus:outline-none focus:border-primary/50 transition-colors cursor-pointer"
         >
           <option value="">All Priorities</option>
@@ -74,10 +63,7 @@ export default function IncidentFilterBar() {
 
         <select
           value={tier}
-          onChange={(e) => {
-            setTier(e.target.value);
-            handleFilterChange("tier", e.target.value);
-          }}
+          onChange={(e) => handleFilterChange("tier", e.target.value)}
           className="bg-surface-container border border-outline-variant/30 rounded-lg px-3 py-1.5 text-body-sm text-on-surface focus:outline-none focus:border-primary/50 transition-colors cursor-pointer"
         >
           <option value="">All Tiers</option>

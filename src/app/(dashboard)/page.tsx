@@ -3,11 +3,8 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import IncidentCard from "@/components/IncidentCard";
 import { getIncidents } from "@/actions/incidents";
-import { PrismaClient } from "@prisma/client";
 import Link from "next/link";
 import ExportDashboardCsvButton from "@/components/ExportDashboardCsvButton";
-
-const prisma = new PrismaClient();
 
 export default async function Dashboard({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const resolvedParams = await searchParams;
@@ -29,8 +26,6 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   }
   
   // Calculate dynamic metrics
-  const postMortems = await prisma.postMortem.findMany();
-  
   const openIncidentsCount = incidents.filter(i => i.status !== "CLOSED" && i.status !== "RESOLVED").length;
   const criticalCount = incidents.filter(i => i.priority === "CRITICAL" && i.status !== "RESOLVED" && i.status !== "CLOSED").length;
   const escalatedCount = incidents.filter(i => i.tier !== "L1" && i.status !== "RESOLVED" && i.status !== "CLOSED").length;
