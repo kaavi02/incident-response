@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-// import { signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
+import Link from "next/link";
 
 export default function TopNav() {
-  // const { data: session } = useSession();
+  const { data: session } = useSession();
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   return (
@@ -50,26 +51,37 @@ export default function TopNav() {
             </span>
             <span className="absolute top-0 right-0 w-2 h-2 rounded-full bg-error animate-pulse"></span>
           </button>
-          <button className="text-on-surface-variant hover:text-primary transition-colors">
+          <Link href="/admin" className="text-on-surface-variant hover:text-primary transition-colors flex items-center">
             <span
               className="material-symbols-outlined"
               style={{ fontVariationSettings: '"FILL" 0' }}
             >
               settings
             </span>
-          </button>
+          </Link>
         </div>
         <div className="flex items-center gap-3">
           <div className="text-right hidden md:block">
-            <div className="text-body-md font-headline-sm font-semibold text-on-surface leading-none">
-              Test User
+            <div className="text-body-md font-headline-sm font-semibold text-on-surface leading-none truncate max-w-[150px]">
+              {session?.user?.name || session?.user?.email?.split('@')[0] || "User"}
             </div>
             <div className="text-telemetry-sm font-telemetry-sm text-primary tracking-wide">
-              ADMIN
+              {(session?.user as any)?.role || "RESPONDER"}
             </div>
           </div>
-          <div className="h-10 w-10 rounded-full bg-surface-container border border-primary/30 flex items-center justify-center overflow-hidden">
-            <span className="text-body-md font-bold text-primary">OP</span>
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full bg-surface-container border border-primary/30 flex items-center justify-center overflow-hidden">
+              <span className="text-body-md font-bold text-primary uppercase">
+                {(session?.user?.name || session?.user?.email || "U").substring(0, 2)}
+              </span>
+            </div>
+            <button 
+              onClick={() => signOut({ callbackUrl: '/login' })}
+              className="p-2 text-on-surface-variant hover:text-error hover:bg-error/10 rounded-full transition-colors flex items-center justify-center"
+              title="Log out"
+            >
+              <span className="material-symbols-outlined text-[20px]">logout</span>
+            </button>
           </div>
         </div>
       </div>
