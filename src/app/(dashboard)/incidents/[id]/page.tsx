@@ -6,9 +6,10 @@ import Link from "next/link";
 import CommentsSection from "@/components/CommentsSection";
 import ExportPdfButton from "@/components/ExportPdfButton";
 
-export default async function IncidentWarRoom({ params }: { params: { id: string } }) {
+export default async function IncidentWarRoom({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const session = await getServerSession(authOptions);
-  const incident = await getIncidentById(params.id);
+  const incident = await getIncidentById(id);
 
   if (!incident) {
     notFound();
