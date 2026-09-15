@@ -25,8 +25,9 @@ export default async function Dashboard() {
   const totalMTTR = postMortems.reduce((acc, pm) => acc + (pm.timeToResolve || 0), 0);
   const avgMTTR = postMortems.length > 0 ? Math.round(totalMTTR / postMortems.length) : 0;
   
-  const activeCount = incidents.filter(i => i.status !== "CLOSED" && i.status !== "RESOLVED").length;
-  const escalatedCount = incidents.filter(i => i.tier !== "L1").length;
+  const openIncidentsCount = incidents.filter(i => i.status !== "CLOSED" && i.status !== "RESOLVED").length;
+  const criticalCount = incidents.filter(i => i.priority === "CRITICAL" && i.status !== "RESOLVED" && i.status !== "CLOSED").length;
+  const escalatedCount = incidents.filter(i => i.tier !== "L1" && i.status !== "RESOLVED" && i.status !== "CLOSED").length;
 
   return (
     <div className="space-y-8">
