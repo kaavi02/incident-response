@@ -76,18 +76,18 @@ const config: Config = {
         "margin": "1rem"
       },
       "fontFamily": {
-        "telemetry-lg": ["JetBrains Mono"],
-        "headline-sm": ["Inter"],
-        "label-caps": ["JetBrains Mono"],
-        "headline-xl-mobile": ["Inter"],
-        "headline-md": ["Inter"],
-        "body-lg": ["Inter"],
-        "telemetry-sm": ["JetBrains Mono"],
-        "headline-lg": ["Inter"],
-        "body-sm": ["Inter"],
-        "body-md": ["Inter"],
-        "metric-display": ["JetBrains Mono"],
-        "headline-xl": ["Inter"]
+        "telemetry-lg": ["var(--font-jetbrains-mono)", "monospace"],
+        "headline-sm": ["var(--font-inter)", "sans-serif"],
+        "label-caps": ["var(--font-jetbrains-mono)", "monospace"],
+        "headline-xl-mobile": ["var(--font-inter)", "sans-serif"],
+        "headline-md": ["var(--font-inter)", "sans-serif"],
+        "body-lg": ["var(--font-inter)", "sans-serif"],
+        "telemetry-sm": ["var(--font-jetbrains-mono)", "monospace"],
+        "headline-lg": ["var(--font-inter)", "sans-serif"],
+        "body-sm": ["var(--font-inter)", "sans-serif"],
+        "body-md": ["var(--font-inter)", "sans-serif"],
+        "metric-display": ["var(--font-jetbrains-mono)", "monospace"],
+        "headline-xl": ["var(--font-inter)", "sans-serif"]
       },
       "fontSize": {
         "telemetry-lg": ["0.875rem", { "lineHeight": "1.25rem", "letterSpacing": "-0.01em", "fontWeight": "600" }],
