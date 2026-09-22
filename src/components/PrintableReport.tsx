@@ -1,4 +1,8 @@
+import { parseIncidentDescription } from "@/lib/incident-parser";
+
 export default function PrintableReport({ incident }: { incident: any }) {
+  const parsed = parseIncidentDescription(incident.description);
+
   return (
     <div
       id="printable-report"
@@ -58,10 +62,10 @@ export default function PrintableReport({ incident }: { incident: any }) {
       </div>
 
       {/* Network Telemetry */}
-      {(incident.sourceIp || incident.destinationIp || incident.sourcePort || incident.destinationPort) && (
+      {(incident.sourceIp || incident.destinationIp || incident.sourcePort || incident.destinationPort || parsed.otherInfo) && (
         <div className="mb-8">
           <h3 className="text-lg font-bold text-gray-900 border-b border-gray-300 pb-2 mb-3">
-            Network Telemetry
+            Network Telemetry & Attributes
           </h3>
           <table className="w-full border-collapse border border-gray-300 text-sm">
             <tbody>
@@ -77,6 +81,12 @@ export default function PrintableReport({ incident }: { incident: any }) {
                 <td className="border border-gray-300 bg-gray-100 p-2 font-semibold">Destination Port</td>
                 <td className="border border-gray-300 p-2 font-mono">{incident.destinationPort || "N/A"}</td>
               </tr>
+              {parsed.otherInfo && (
+                <tr>
+                  <td className="border border-gray-300 bg-gray-100 p-2 font-semibold">Other Info</td>
+                  <td colSpan={3} className="border border-gray-300 p-2 font-mono">{parsed.otherInfo}</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -88,9 +98,21 @@ export default function PrintableReport({ incident }: { incident: any }) {
           1. Incident Description
         </h3>
         <p className="text-gray-800 whitespace-pre-wrap leading-relaxed text-sm">
-          {incident.description}
+          {parsed.description}
         </p>
       </div>
+
+      {/* Attached Log File */}
+      {parsed.logFile && (
+        <div className="mb-8">
+          <h3 className="text-lg font-bold text-gray-900 border-b border-gray-300 pb-2 mb-3">
+            Attached Log File: <span className="font-mono">{parsed.logFile.name}</span>
+          </h3>
+          <pre className="p-3 bg-gray-100 border border-gray-300 text-xs font-mono whitespace-pre-wrap leading-relaxed max-h-96 overflow-hidden">
+            {parsed.logFile.content}
+          </pre>
+        </div>
+      )}
 
       {/* Escalation Timeline */}
       {incident.escalations?.length > 0 && (

@@ -2,6 +2,7 @@
 
 import { PrismaClient, EscalationTier, Status, Priority } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { formatIncidentDescription } from "@/lib/incident-parser";
 
 const prisma = new PrismaClient();
 
@@ -75,11 +76,21 @@ export async function createIncident(data: {
   destinationIp?: string;
   sourcePort?: number;
   destinationPort?: number;
+  otherInfo?: string;
+  logFileName?: string;
+  logContent?: string;
 }) {
+  const fullDescription = formatIncidentDescription({
+    description: data.description,
+    otherInfo: data.otherInfo,
+    logFileName: data.logFileName,
+    logContent: data.logContent,
+  });
+
   const incident = await prisma.incident.create({
     data: {
       title: data.title,
-      description: data.description,
+      description: fullDescription,
       priority: data.priority,
       reporterId: data.reporterId,
       tier: "L1", // Starts at L1

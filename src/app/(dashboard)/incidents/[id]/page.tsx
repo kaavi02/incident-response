@@ -6,6 +6,8 @@ import Link from "next/link";
 import CommentsSection from "@/components/CommentsSection";
 import ExportPdfButton from "@/components/ExportPdfButton";
 import PrintableReport from "@/components/PrintableReport";
+import AttachedLogViewer from "@/components/AttachedLogViewer";
+import { parseIncidentDescription } from "@/lib/incident-parser";
 
 export default async function IncidentWarRoom({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -15,6 +17,8 @@ export default async function IncidentWarRoom({ params }: { params: Promise<{ id
   if (!incident) {
     notFound();
   }
+
+  const parsed = parseIncidentDescription(incident.description);
 
   const priorityColor =
     incident.priority === "CRITICAL"
@@ -27,6 +31,7 @@ export default async function IncidentWarRoom({ params }: { params: Promise<{ id
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
+      {/* Top action bar */}
       <div className="flex items-center justify-between">
         <Link href="/incidents" className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors text-body-md font-semibold">
           <span className="material-symbols-outlined text-[18px]">arrow_back</span>
@@ -75,11 +80,11 @@ export default async function IncidentWarRoom({ params }: { params: Promise<{ id
         </div>
 
         {/* Network Telemetry Section */}
-        {(incident.sourceIp || incident.destinationIp || incident.sourcePort || incident.destinationPort) && (
+        {(incident.sourceIp || incident.destinationIp || incident.sourcePort || incident.destinationPort || parsed.otherInfo) && (
           <div className="mb-8">
             <h3 className="text-headline-sm font-headline-sm font-semibold text-on-surface mb-3 flex items-center gap-2">
               <span className="material-symbols-outlined text-primary text-[20px]">radar</span>
-              Network Telemetry
+              Network Telemetry & Attributes
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-surface-container/30 p-4 rounded-xl border border-outline-variant/20">
               {incident.sourceIp && (
@@ -106,6 +111,14 @@ export default async function IncidentWarRoom({ params }: { params: Promise<{ id
                   <span className="font-mono text-body-sm text-tertiary bg-tertiary/10 px-2 py-1 rounded">{incident.destinationPort}</span>
                 </div>
               )}
+              {parsed.otherInfo && (
+                <div className="col-span-2 md:col-span-4 mt-2 pt-2 border-t border-outline-variant/10">
+                  <span className="block font-label-caps mb-1 text-on-surface-variant opacity-70">Other Information</span>
+                  <span className="font-mono text-body-sm text-on-surface bg-surface-container/60 px-3 py-1.5 rounded-lg block break-all">
+                    {parsed.otherInfo}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -114,9 +127,14 @@ export default async function IncidentWarRoom({ params }: { params: Promise<{ id
         <div className="mb-8">
           <h3 className="text-headline-sm font-headline-sm font-semibold text-on-surface mb-3">Description</h3>
           <p className="text-body-lg text-on-surface-variant leading-relaxed whitespace-pre-wrap bg-surface-container/30 p-4 rounded-xl border border-outline-variant/20">
-            {incident.description}
+            {parsed.description}
           </p>
         </div>
+
+        {/* Attached Log Viewer */}
+        {parsed.logFile && (
+          <AttachedLogViewer logFile={parsed.logFile} />
+        )}
 
         {/* Escalation Timeline */}
         {incident.escalations.length > 0 && (

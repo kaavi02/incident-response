@@ -19,8 +19,38 @@ export default function NewIncidentPage() {
   const [destinationIp, setDestinationIp] = useState("");
   const [sourcePort, setSourcePort] = useState("");
   const [destinationPort, setDestinationPort] = useState("");
+  const [otherInfo, setOtherInfo] = useState("");
+
+  // Log file upload state
+  const [logFile, setLogFile] = useState<{ name: string; size: string; content: string } | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
   
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleFileChange = (file: File) => {
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("Log file must be less than 2MB.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = (e.target?.result as string) || "";
+      const sizeStr = file.size < 1024 
+        ? `${file.size} B` 
+        : `${(file.size / 1024).toFixed(1)} KB`;
+      setLogFile({
+        name: file.name,
+        size: sizeStr,
+        content
+      });
+      toast.success(`Attached ${file.name}`);
+    };
+    reader.onerror = () => {
+      toast.error("Failed to read log file.");
+    };
+    reader.readAsText(file);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,6 +76,9 @@ export default function NewIncidentPage() {
         destinationIp: destinationIp || undefined,
         sourcePort: sourcePort ? parseInt(sourcePort) : undefined,
         destinationPort: destinationPort ? parseInt(destinationPort) : undefined,
+        otherInfo: otherInfo || undefined,
+        logFileName: logFile?.name,
+        logContent: logFile?.content,
       });
       toast.success("Incident posted successfully!");
       router.push(`/incidents/${incident.id}`);
@@ -158,7 +191,85 @@ export default function NewIncidentPage() {
                   className="w-full bg-surface-container-lowest border border-outline-variant/40 rounded-xl px-4 py-3 text-body-md text-on-surface font-mono placeholder-on-surface-variant/50 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
                 />
               </div>
+
+              <div className="col-span-2">
+                <label className="block text-body-sm font-semibold text-on-surface mb-2">Other Information</label>
+                <input
+                  type="text"
+                  value={otherInfo}
+                  onChange={(e) => setOtherInfo(e.target.value)}
+                  placeholder="e.g. Protocol: HTTPS, User Agent, Hostname: srv-db-01, Process: winword.exe"
+                  className="w-full bg-surface-container-lowest border border-outline-variant/40 rounded-xl px-4 py-3 text-body-md text-on-surface font-mono placeholder-on-surface-variant/50 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
+                />
+              </div>
             </div>
+          </div>
+
+          <div className="space-y-4 pb-6 border-b border-outline-variant/20">
+            <div className="flex items-center justify-between">
+              <h2 className="text-headline-sm font-semibold text-primary flex items-center gap-2">
+                <span className="material-symbols-outlined text-[20px]">upload_file</span>
+                Attach Log File (Optional)
+              </h2>
+              {logFile && (
+                <button
+                  type="button"
+                  onClick={() => setLogFile(null)}
+                  className="text-body-sm text-error hover:text-error/80 flex items-center gap-1 font-semibold transition-colors"
+                >
+                  <span className="material-symbols-outlined text-[16px]">delete</span>
+                  Remove File
+                </button>
+              )}
+            </div>
+
+            {!logFile ? (
+              <label
+                onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                onDragLeave={() => setIsDragging(false)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setIsDragging(false);
+                  if (e.dataTransfer.files?.[0]) {
+                    handleFileChange(e.dataTransfer.files[0]);
+                  }
+                }}
+                className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all ${
+                  isDragging 
+                    ? "border-primary bg-primary/10" 
+                    : "border-outline-variant/40 bg-surface-container-lowest hover:border-primary/40 hover:bg-surface-container/30"
+                }`}
+              >
+                <input
+                  type="file"
+                  accept=".log,.txt,.json,.csv,.xml,.pcap"
+                  className="hidden"
+                  onChange={(e) => {
+                    if (e.target.files?.[0]) {
+                      handleFileChange(e.target.files[0]);
+                    }
+                  }}
+                />
+                <span className="material-symbols-outlined text-primary text-3xl mb-2">upload_file</span>
+                <p className="text-body-md font-semibold text-on-surface">Click to upload or drag & drop log file</p>
+                <p className="text-telemetry-sm text-on-surface-variant mt-1 font-mono">Supports .log, .txt, .json, .csv (Max 2MB)</p>
+              </label>
+            ) : (
+              <div className="p-4 rounded-xl bg-surface-container/50 border border-outline-variant/30 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                    <span className="material-symbols-outlined text-[20px]">description</span>
+                  </div>
+                  <div>
+                    <div className="text-body-md font-semibold text-on-surface">{logFile.name}</div>
+                    <div className="text-telemetry-sm text-on-surface-variant font-mono">{logFile.size} • Ready for analysis</div>
+                  </div>
+                </div>
+                <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex items-center gap-1 font-mono">
+                  <span className="material-symbols-outlined text-[14px]">check</span> Attached
+                </span>
+              </div>
+            )}
           </div>
 
           <div>
