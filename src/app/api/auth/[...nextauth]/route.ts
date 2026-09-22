@@ -56,6 +56,13 @@ export const authOptions: NextAuthOptions = {
         (session.user as any).role = (token as any).role;
       }
       return session;
+    },
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith("/")) return url;
+      try {
+        if (new URL(url).origin === baseUrl) return url;
+      } catch {}
+      return baseUrl;
     }
   },
   pages: {

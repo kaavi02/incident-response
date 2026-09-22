@@ -181,7 +181,11 @@ export default function TopNav({ recentActivity = [] }: { recentActivity?: any[]
               </span>
             </div>
             <button 
-              onClick={() => signOut({ callbackUrl: '/login' })}
+              onClick={async () => {
+                await signOut({ redirect: false });
+                router.push("/login");
+                router.refresh();
+              }}
               className="p-2 text-on-surface-variant hover:text-error hover:bg-error/10 rounded-full transition-colors flex items-center justify-center"
               title="Log out"
             >
