@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { deleteUser, updateUser } from "@/actions/admin";
+import { SYSTEM_ROLES, ROLE_LABELS, ROLE_BADGE_STYLES } from "@/lib/roles";
 
 export default function AdminUserRow({ user, currentUserId }: { user: any, currentUserId: string }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -61,8 +62,8 @@ export default function AdminUserRow({ user, currentUserId }: { user: any, curre
           {user.email}
         </td>
         <td className="px-5 py-3">
-          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-label-caps border border-primary/40 bg-primary-container/20 text-primary font-semibold">
-            {user.role}
+          <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-label-caps border font-semibold ${ROLE_BADGE_STYLES[user.role] || "border-primary/40 bg-primary-container/20 text-primary"}`}>
+            {ROLE_LABELS[user.role] || user.role}
           </span>
         </td>
         <td className="px-5 py-3 text-body-sm text-on-surface-variant" suppressHydrationWarning>
@@ -135,11 +136,11 @@ export default function AdminUserRow({ user, currentUserId }: { user: any, curre
                     className="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-body-sm text-on-surface focus:border-primary/50 focus:ring-1 focus:ring-primary/50 outline-none"
                     disabled={isCurrentUser} // Prevent admins from demoting themselves by accident
                   >
-                    <option value="USER">Base User</option>
-                    <option value="L1">L1 Triage</option>
-                    <option value="L2">L2 Responder</option>
-                    <option value="L3">L3 Analyst</option>
-                    <option value="ADMIN">System Administrator</option>
+                    {SYSTEM_ROLES.map((r) => (
+                      <option key={r.value} value={r.value}>
+                        {r.label}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>

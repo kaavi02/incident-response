@@ -83,6 +83,16 @@ export async function updateUser(userId: string, data: {
     throw new Error("User with this email already exists.");
   }
 
+  if (data.role !== "ADMIN") {
+    const existingUser = await prisma.user.findUnique({ where: { id: userId } });
+    if (existingUser?.role === "ADMIN") {
+      const adminCount = await prisma.user.count({ where: { role: "ADMIN" } });
+      if (adminCount <= 1) {
+        throw new Error("Cannot demote the last system administrator.");
+      }
+    }
+  }
+
   const updateData: any = {
     name: data.name,
     email: data.email,

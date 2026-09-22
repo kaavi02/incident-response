@@ -6,6 +6,7 @@ import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
+import { ROLE_LABELS } from "@/lib/roles";
 
 export default function TopNav({ recentActivity = [] }: { recentActivity?: any[] }) {
   const { data: session } = useSession();
@@ -170,7 +171,7 @@ export default function TopNav({ recentActivity = [] }: { recentActivity?: any[]
               {session?.user?.name || session?.user?.email?.split('@')[0] || "User"}
             </div>
             <div className="text-telemetry-sm font-telemetry-sm text-primary tracking-wide">
-              {(session?.user as any)?.role || "RESPONDER"}
+              {ROLE_LABELS[(session?.user as any)?.role] || (session?.user as any)?.role || "Responder"}
             </div>
           </div>
           <div className="flex items-center gap-3">

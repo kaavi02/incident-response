@@ -4,6 +4,7 @@ import { useState } from "react";
 import { createUser } from "@/actions/admin";
 
 import { toast } from "react-hot-toast";
+import { SYSTEM_ROLES } from "@/lib/roles";
 
 export default function CreateUserForm() {
   const [name, setName] = useState("");
@@ -76,14 +77,13 @@ export default function CreateUserForm() {
           <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            className="w-full bg-surface-container/50 border border-outline-variant/30 rounded-lg px-4 py-2 text-body-sm focus:border-primary/50"
+            className="w-full bg-surface-container/50 border border-outline-variant/30 rounded-lg px-4 py-2 text-body-sm focus:border-primary/50 text-on-surface"
           >
-            <option value="L1">L1 Responder (Triage)</option>
-            <option value="L2">L2 Responder (Analysis)</option>
-            <option value="L3">L3 Responder (Expert)</option>
-            <option value="INCIDENT_RESPONDER">Incident Commander</option>
-            <option value="DIGITAL_FORENSICS">Digital Forensics</option>
-            <option value="ADMIN">System Administrator</option>
+            {SYSTEM_ROLES.map((r) => (
+              <option key={r.value} value={r.value}>
+                {r.label}
+              </option>
+            ))}
           </select>
         </div>
       </div>
